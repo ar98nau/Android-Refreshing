@@ -32,7 +32,9 @@ import android.widget.Toast;
  * order, a spinner for setting the label for a phone number, and EditText input
  * controls.
  */
-public class OrderActivity extends AppCompatActivity {
+public class OrderActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+
+    String spinner_label;
 
     /**
      * Sets the content view to activity_order, and gets the intent and its
@@ -50,6 +52,20 @@ public class OrderActivity extends AppCompatActivity {
         String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         TextView textView = findViewById(R.id.order_textview);
         textView.setText(message);
+
+        Spinner spinner = findViewById(R.id.spinner);
+        if (spinner != null) {
+            spinner.setOnItemSelectedListener(this);
+        }
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getApplicationContext(),
+                R.array.labels_array, android.R.layout.simple_spinner_item);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        if (spinner != null) {
+            spinner.setAdapter(adapter);
+        }
     }
 
     /**
@@ -60,5 +76,43 @@ public class OrderActivity extends AppCompatActivity {
     public void displayToast(String message) {
         Toast.makeText(getApplicationContext(), message,
                 Toast.LENGTH_SHORT).show();
+    }
+
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+        // Check which radio button was clicked.
+        switch (view.getId()) {
+            case R.id.sameday:
+                if (checked)
+                    // Same day service
+                    displayToast(getString(R.string.same_day_messenger_service));
+                break;
+            case R.id.nextday:
+                if (checked)
+                    // Next day delivery
+                    displayToast(getString(R.string.next_day_ground_delivery));
+                break;
+            case R.id.pickup:
+                if (checked)
+                    // Pick up
+                    displayToast(getString(R.string.pick_up));
+                break;
+            default:
+                // Do nothing.
+                break;
+        }
+    }
+
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        spinner_label = adapterView.getItemAtPosition(i).toString();
+        displayToast(spinner_label);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 }
